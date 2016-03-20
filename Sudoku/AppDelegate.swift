@@ -12,11 +12,22 @@ import UIKit
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
+    
+    
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         
+        //  Start by trying to load a puzzle string from the info file if it exists, 
+        //  otherwise just start with an empty sudoku string
+        let mainInfo = NSBundle.mainBundle().infoDictionary
+        var puzzleString: String? = nil
+        if let input = mainInfo?[""] as? String where input.isValidSudokuPuzzle {
+            puzzleString = input
+        }
+        
+        //  Create our window and set the root view controller
         window = UIWindow(frame: UIScreen.mainScreen().bounds)
-        let sudokuViewController = SudokuViewController()
+        let sudokuViewController = SudokuViewController(puzzleString: puzzleString)
         window?.rootViewController = UINavigationController(rootViewController: sudokuViewController)
         window?.makeKeyAndVisible()
         

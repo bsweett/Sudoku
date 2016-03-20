@@ -8,31 +8,93 @@
 
 import UIKit
 
+/// A basic view controller used to control the sudoku puzzle view and the solution algorithm.
 class SudokuViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
 
+    
+    //  MARK: - Constants
+    
+    /// The title of the clear button
     private let kClearButtonTitle = NSLocalizedString("Clear", comment: "")
+    
+    /// The title of the solve button
     private let kSolveButtonTitle = NSLocalizedString("Solve", comment: "")
+    
+    /// The title of this view controller
     private let kViewTitle = NSLocalizedString("Sudoku", comment: "")
+    
+    /// The spacing between each cell on the puzzle board
     private let kCellSpacing: CGFloat = 2.0
     
+    
+    //  MARK: - Variables
+    
+    /// A collection view which is used to model the puzzle board
     @IBOutlet weak var collectionView: UICollectionView!
+    
+    /// A button that is used to solve and reset the puzzle board
     @IBOutlet weak var solveButton: UIButton!
     
+    /// The puzzle being displayed on the board. This begins unsolved but is set to solved once the solve button is pressed.
     private var puzzle: Sudoku = constructPuzzle()
+    
+    /// A flag for toggling the state of the solve button to clear the puzzle.
     private var isFinishedSolutionAttempt: Bool = false
     
-    convenience init() {
+    
+    //  MARK: - Constructors
+    
+    /**
+     Returns a newly initialized sudoku view controller loaded from the default nib.
+     
+     - returns: self, initalized using a constant nib file in the default bundle.
+     */
+    convenience init(puzzleString: String?) {
         self.init(nibName: "SudokuViewController", bundle: nil)
+        
+        //  If we were given a valid sudoku string
+        if let sudokuString = puzzleString {
+            
+        }
     }
     
+    /**
+     Returns an sudoku view controller initialized from data in a given unarchiver.
+     self, initialized using the data in decoder.
+     
+     - parameter aDecoder: An unarchiver object.
+     
+     - returns: self, initialized using the data in decoder.
+     */
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
     
+    /**
+     Returns a newly initialized sudoku view controller with the nib file in the specified bundle.
+     
+     - parameter nibNameOrNil:   The name of the nib file to associate with the view controller. 
+     The nib file name should not contain any leading path information. If you specify nil, the nibName property is set to nil.
+     
+     - parameter nibBundleOrNil: The bundle in which to search for the nib file. This method looks for the nib file in the bundle's 
+     language-specific project directories first, followed by the Resources directory. If this parameter is nil, the method uses the 
+     heuristics described below to locate the nib file.
+     
+     - returns: A newly initialized SudokuViewController object.
+     */
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: NSBundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
     }
     
+    
+    //  MARK: - View Lifecycle
+    
+    /**
+     Called after the controller's view is loaded into memory.
+     This method is called after the view controller has loaded its view hierarchy into memory. 
+     This method is called regardless of whether the view hierarchy was loaded from a nib file or created programmatically in the loadView method. 
+     You usually override this method to perform additional initialization on views that were loaded from nib files.
+     */
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -56,6 +118,12 @@ class SudokuViewController: UIViewController, UICollectionViewDataSource, UIColl
         collectionView.userInteractionEnabled = false
     }
 
+    /**
+     Sent to the view controller when the app receives a memory warning.
+     Your app never calls this method directly. Instead, this method is called when the system determines that the amount of available memory is low.
+     You can override this method to release any additional memory used by your view controller. 
+     If you do, your implementation of this method must call the super implementation at some point.
+     */
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }

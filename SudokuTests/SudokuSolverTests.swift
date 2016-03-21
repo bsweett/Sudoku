@@ -31,7 +31,7 @@ class SudokuSolverTests: XCTestCase {
      */
     func testSolve() {
         
-        let demo = constructPuzzle()
+        let demo = SudokuType.Default.constructPuzzle()
         let result = self.algorithm?.solve(demo)
         XCTAssertNotNil(result, "The algorithm must be able to solve the demo puzzle.")
     }
@@ -41,7 +41,7 @@ class SudokuSolverTests: XCTestCase {
      */
     func testGetWorkingCopy() {
         
-        let demo = constructPuzzle()
+        let demo = SudokuType.Default.constructPuzzle()
     
         //  Build a cell in the top left corener and update it in the demo puzzle
         let cell = SudokuCell(row: 0, col: 8)
@@ -56,7 +56,7 @@ class SudokuSolverTests: XCTestCase {
      */
     func testGetNextEmptyCellInPuzzle() {
         
-        let demo = constructPuzzle()
+        let demo = SudokuType.Default.constructPuzzle()
         
         let cell = self.algorithm?.getNextEmptyCellInPuzzle(demo)
         
@@ -74,6 +74,75 @@ class SudokuSolverTests: XCTestCase {
      */
     func testIsNumberValid() {
         
+        let easy = SudokuType.Easy.constructPuzzle()
+        
+        let testCell = SudokuCell(row: 0, col: 0)
+        let result = self.algorithm?.isNumberValid(9, forCell: testCell, inPuzzle: easy)
+        
+        XCTAssertNotNil(result, "The returned value from isNumberValid should not be nil.")
+        XCTAssertTrue(result == true, "The input of 9 for cell at row 0 column 0 should return true for isNumberValid.")
+        
+        let failedResult = self.algorithm?.isNumberValid(5, forCell: testCell, inPuzzle: easy)
+        
+        XCTAssertNotNil(failedResult, "The returned value from isNumberValid should not be nil.")
+        XCTAssertFalse(failedResult == true, "The input of 5 for cell at row 0 column 0 should return false for isNumberValid.")
+    }
+    
+    /**
+     Tests if a number is a valid entry for a box in the puzzle
+     */
+    func testIsNumberValidForBox() {
+        
+        let easy = SudokuType.Easy.constructPuzzle()
+        
+        let testCell = SudokuCell(row: 0, col: 0)
+        let result = self.algorithm?.isNumberValidForBox(8, forCell: testCell, inPuzzle: easy)
+        
+        XCTAssertNotNil(result, "The returned value from isNumberValidForBox should not be nil.")
+        XCTAssertTrue(result == true, "The input of 8 for cell at row 0 column 0 should return true for isNumberValidForBox.")
+        
+        let failedResult = self.algorithm?.isNumberValidForBox(1, forCell: testCell, inPuzzle: easy)
+        
+        XCTAssertNotNil(failedResult, "The returned value from isNumberValidForBox should not be nil.")
+        XCTAssertFalse(failedResult == true, "The input of 1 for cell at row 0 column 0 should return false for isNumberValidForBox.")
+    }
+    
+    /**
+     Tests if a number is a valid entry for a row in the puzzle
+     */
+    func testIsNumberValidForRow() {
+        
+        let easy = SudokuType.Easy.constructPuzzle()
+        
+        let testCell = SudokuCell(row: 0, col: 0)
+        let result = self.algorithm?.isNumberValidForRow(5, forCell: testCell, inPuzzle: easy)
+        
+        XCTAssertNotNil(result, "The returned value from isNumberValidForRow should not be nil.")
+        XCTAssertTrue(result == true, "The input of 5 for cell at row 0 column 0 should return true for isNumberValidForRow.")
+        
+        let failedResult = self.algorithm?.isNumberValidForRow(1, forCell: testCell, inPuzzle: easy)
+        
+        XCTAssertNotNil(failedResult, "The returned value from isNumberValidForRow should not be nil.")
+        XCTAssertFalse(failedResult == true, "The input of 1 for cell at row 0 column 0 should return false for isNumberValidForRow.")
+    }
+    
+    /**
+     Tests if a number is a valid entry for a column in the puzzle
+     */
+    func testIsNumberValidForColumn() {
+        
+        let easy = SudokuType.Easy.constructPuzzle()
+        
+        let testCell = SudokuCell(row: 0, col: 0)
+        let result = self.algorithm?.isNumberValidForColumn(2, forCell: testCell, inPuzzle: easy)
+        
+        XCTAssertNotNil(result, "The returned value from isNumberValidForColumn should not be nil.")
+        XCTAssertTrue(result == true, "The input of 2 for cell at row 0 column 0 should return true for isNumberValidForColumn.")
+        
+        let failedResult = self.algorithm?.isNumberValidForColumn(1, forCell: testCell, inPuzzle: easy)
+        
+        XCTAssertNotNil(failedResult, "The returned value from isNumberValidForColumn should not be nil.")
+        XCTAssertFalse(failedResult == true, "The input of 1 for cell at row 0 column 0 should return false for isNumberValidForColumn.")
     }
 
     /**
@@ -81,7 +150,7 @@ class SudokuSolverTests: XCTestCase {
      */
     func testHardSolvePerformance() {
 
-        let hard = constructHardPuzzle()
+        let hard = SudokuType.Hard.constructPuzzle()
         
         if let algo = self.algorithm {
             self.measureBlock {
@@ -97,7 +166,7 @@ class SudokuSolverTests: XCTestCase {
      */
     func testEasySolvePerformance() {
         
-        let easy = constructEasyPuzzle()
+        let easy = SudokuType.Easy.constructPuzzle()
         
         if let algo = self.algorithm {
             self.measureBlock {

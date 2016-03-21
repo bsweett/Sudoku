@@ -20,6 +20,9 @@ class SudokuViewController: UIViewController, UICollectionViewDataSource, UIColl
     /// The title of the solve button
     private let kSolveButtonTitle = NSLocalizedString("Solve", comment: "")
     
+    /// A message that is shown to the user when no solution for the puzzle is found
+    private let kNoSolutionMessage = NSLocalizedString("No solution was found for this puzzle.", comment: "")
+    
     /// The title of this view controller
     private let kViewTitle = NSLocalizedString("Sudoku", comment: "")
     
@@ -35,8 +38,14 @@ class SudokuViewController: UIViewController, UICollectionViewDataSource, UIColl
     /// A button that is used to solve and reset the puzzle board
     @IBOutlet weak var solveButton: UIButton!
     
+    /// A label that is used to tell the user if the puzzle has no solution
+    @IBOutlet weak var errorLabel: UILabel!
+    
     /// The puzzle being displayed on the board. This begins unsolved but is set to solved once the solve button is pressed.
-    private var puzzle: Sudoku = constructPuzzle()
+    private var puzzle: Sudoku = SudokuType.Default.constructPuzzle()
+    
+    /// A custom string provided from the constructor for building puzzles. Nil if the default puzzle should be used.
+    private var customPuzzleString: String?
     
     /// A flag for toggling the state of the solve button to clear the puzzle.
     private var isFinishedSolutionAttempt: Bool = false
@@ -54,7 +63,8 @@ class SudokuViewController: UIViewController, UICollectionViewDataSource, UIColl
         
         //  If we were given a valid sudoku string
         if let sudokuString = puzzleString {
-            
+            self.customPuzzleString = sudokuString
+            self.puzzle = SudokuType.Custom(sudokuString).constructPuzzle()
         }
     }
     
@@ -106,8 +116,6 @@ class SudokuViewController: UIViewController, UICollectionViewDataSource, UIColl
         solveButton.setTitleColor(UIColor.emperorGray(), forState: .Highlighted)
         solveButton.layer.cornerRadius = 4.0
         
-        //  TODO: We can assert the size here so that the collection view doesn't render if the
-        //  the puzzle isn't the right size (i.e. 9x9)
         collectionView.collectionViewLayout = UICollectionViewFlowLayout()
         collectionView.registerNib(UINib(nibName: "SudokuCollectionViewCell", bundle: nil),
                                    forCellWithReuseIdentifier: "cell")
@@ -136,12 +144,22 @@ class SudokuViewController: UIViewController, UICollectionViewDataSource, UIColl
         //  If a solution is being displayed this action will reset the
         //  data in the puzzle
         if isFinishedSolutionAttempt {
-            puzzle = constructPuzzle()
+            
+            errorLabel.text = ""
+            
+            //  Reset the puzzle
+            if let customInput = self.customPuzzleString {
+                puzzle = SudokuType.Custom(customInput).constructPuzzle()
+            } else {
+                puzzle = SudokuType.Default.constructPuzzle()
+            }
+            
             collectionView.reloadData()
             isFinishedSolutionAttempt = false
             solveButton.setTitle(kSolveButtonTitle, forState: .Normal)
             
         } else {
+            
             solveButton.enabled = false
             solveButton.setTitle(kClearButtonTitle, forState: .Normal)
             
@@ -150,7 +168,7 @@ class SudokuViewController: UIViewController, UICollectionViewDataSource, UIColl
                 puzzle = solution
                 collectionView.reloadData()
             } else {
-                //TODO:  Show error for no solution
+                errorLabel.text = kNoSolutionMessage
             }
             
             solveButton.enabled = true
@@ -161,22 +179,25 @@ class SudokuViewController: UIViewController, UICollectionViewDataSource, UIColl
 
     //  MARK: - UICollectionViewDataSource
     
-    //  TODO: Try without using sections
+    //  TODO: Try without using sections, also try manually updating the frame size
     
     func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
-        return puzzle.count
+        return 1 //puzzle.count
     }
     
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return puzzle[section].count
+        return kPuzzleSize * kPuzzleSize //puzzle[section].count
     }
     
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
         
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier("cell", forIndexPath: indexPath)
         
+        let row = indexPath.row / kPuzzleSize
+        let col = indexPath.row % kPuzzleSize
+        
         if let customCell = cell as? SudokuCollectionViewCell {
-            customCell.setCellText(puzzle[indexPath.section][indexPath.row], animate: false)
+            customCell.setCellText(puzzle[ row/*indexPath.section*/][ col/*indexPath.row*/], animate: false)
             customCell.layer.borderWidth = 0.0
             return customCell
         }

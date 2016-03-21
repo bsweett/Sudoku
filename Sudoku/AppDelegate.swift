@@ -19,9 +19,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         //  Start by trying to load a puzzle string from the info file if it exists, 
         //  otherwise just start with an empty sudoku string
-        let mainInfo = NSBundle.mainBundle().infoDictionary
         var puzzleString: String? = nil
-        if let input = mainInfo?[""] as? String where input.isValidSudokuPuzzle {
+        if let input = NSBundle.mainBundle().objectForInfoDictionaryKey(kPuzzleInfoKey) as? String where input.isValidSudokuPuzzle {
             puzzleString = input
         }
         

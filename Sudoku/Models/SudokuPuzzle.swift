@@ -27,67 +27,109 @@ let kPuzzleSize = 9
 let kBoxSize = 3
 
 /// The key for the info.plist file property so puzzles can be loaded at launch via a string.
-let puzzleInfoKey = "PreloadedPuzzle"
+let kPuzzleInfoKey = "PreloadedPuzzle"
 
 /**
- Returns the default puzzle presented in the assignment
+ A enum that represents the type of sudoku puzzle to solve. Use constructPuzzle() to
+ get a prebuilt puzzle.
  
- - returns: A sudoku puzzle that is shown in the assignment UI mock-up.
+ - Default: The puzzle provided in the assignment.
+ - Easy:    An easy puzzle from websudoku.com.
+ - Hard:    A hard puzzle from websudoku.com.
+ - Custom:  A custom puzzle built from string input.
  */
-func constructPuzzle() -> Sudoku {
-    return [
-        [8, 5, 6,  0, 1, 4,  7, 3, 0],
-        [0, 9, 0,  0, 0, 0,  0, 0, 0],
-        [2, 4, 0,  0, 0, 0,  1, 6, 0],
+enum SudokuType {
+    case Default, Easy, Hard, Custom(String)
+    
+    /**
+     Builds a Sudoku Puzzle 2-d array for this type. A custom puzzle type requires an input string
+     of kPuzzleSize * kPuzzleSize size on a single line with 0's for empty spaces.
+     
+     - returns: A Sudoku puzzle
+     */
+    func constructPuzzle() -> Sudoku {
+        switch(self) {
+        case .Default:
+            return [
+                [8, 5, 6,  0, 1, 4,  7, 3, 0],
+                [0, 9, 0,  0, 0, 0,  0, 0, 0],
+                [2, 4, 0,  0, 0, 0,  1, 6, 0],
+                
+                [0, 6, 2,  0, 5, 9,  3, 0, 0],
+                [0, 3, 1,  8, 0, 2,  4, 5, 0],
+                [0, 0, 5,  3, 4, 0,  9, 2, 0],
+                
+                [0, 2, 4,  0, 0, 0,  0, 7, 3],
+                [0, 0, 0,  0, 0, 0,  0, 1, 0],
+                [0, 1, 8,  6, 3, 0,  2, 9, 4]
+            ]
+        case .Easy:
+            return [
+                [0, 3, 0,  0, 1, 6,  4, 0, 2],
+                [5, 0, 1,  0, 2, 0,  6, 0, 8],
+                [0, 6, 0,  0, 0, 0,  0, 0, 0],
+                
+                [3, 0, 2,  1, 0, 0,  0, 0, 0],
+                [4, 8, 5,  6, 0, 7,  1, 2, 3],
+                [0, 0, 0,  0, 0, 2,  7, 0, 5],
+                
+                [0, 0, 0,  0, 0, 0,  0, 5, 0],
+                [6, 0, 9,  0, 3, 0,  2, 0, 7],
+                [1, 0, 8,  9, 7, 0,  0, 4, 0]
+            ]
+        case .Hard:
+            return [
+                [5, 0, 0,  0, 0, 1,  0, 4, 0],
+                [0, 0, 0,  0, 2, 0,  0, 3, 0],
+                [9, 0, 6,  0, 3, 0,  0, 0, 0],
+                
+                [8, 0, 0,  6, 0, 0,  0, 0, 9],
+                [0, 6, 0,  0, 1, 0,  0, 5, 0],
+                [3, 0, 0,  0, 0, 7,  0, 0, 2],
+                
+                [0, 0, 0,  0, 4, 0,  6, 0, 7],
+                [0, 8, 0,  0, 6, 0,  0, 0, 0],
+                [0, 5, 0,  2, 0, 0,  0, 0, 8]
+            ]
+        case .Custom(let input):
+            return constructCustomPuzzle(input)
+        }
+    }
+    
+    /**
+     Builds a custom puzzle from the given input string. The string cannot be longer or shorter than
+     kPuzzleSize * kPuzzleSize and must be on a single line with only numbers.
+     
+     - parameter inputString: A string that matches the regex defined in isValidSudokuPuzzle
+     
+     - returns: A 2-d array Sudoku puzzle.
+     */
+    private func constructCustomPuzzle(inputString: String) -> Sudoku {
         
-        [0, 6, 2,  0, 5, 9,  3, 0, 0],
-        [0, 3, 1,  8, 0, 2,  4, 5, 0],
-        [0, 0, 5,  3, 4, 0,  9, 2, 0],
+        assert(inputString.characters.count == kPuzzleSize * kPuzzleSize && inputString.isValidSudokuPuzzle)
         
-        [0, 2, 4,  0, 0, 0,  0, 7, 3],
-        [0, 0, 0,  0, 0, 0,  0, 1, 0],
-        [0, 1, 8,  6, 3, 0,  2, 9, 4]
-    ]
-}
-
-/**
- Returns a difficult puzzle taken from websudoku.com
- 
- - returns: A sudoku puzzle that is a high difficulty level to solve.
- */
-func constructHardPuzzle() -> Sudoku {
-    return [
-        [5, 0, 0,  0, 0, 1,  0, 4, 0],
-        [0, 0, 0,  0, 2, 0,  0, 3, 0],
-        [9, 0, 6,  0, 3, 0,  0, 0, 0],
+        var outputPuzzle: Sudoku = []
+        var currentRow: [Int] = []
         
-        [8, 0, 0,  6, 0, 0,  0, 0, 9],
-        [0, 6, 0,  0, 1, 0,  0, 5, 0],
-        [3, 0, 0,  0, 0, 7,  0, 0, 2],
+        //  We need to loop through every character in the string
+        for (index, char) in inputString.characters.enumerate() {
+            
+            //  Make sure we can convert the character to an integer.
+            //  Swift doesn't really have a better way of moving from a character to an integer :/
+            if let currentNumber = Int(String(char)) {
+                
+                //  If we are at the end of a row then start a new row (i.e. array)
+                if (index >= kPuzzleSize && index % kPuzzleSize == 0) {
+                    outputPuzzle.append(currentRow)
+                    currentRow = Array([currentNumber])
+                } else {
+                    currentRow.append(currentNumber)
+                }
+            }
+        }
         
-        [0, 0, 0,  0, 4, 0,  6, 0, 7],
-        [0, 8, 0,  0, 6, 0,  0, 0, 0],
-        [0, 5, 0,  2, 0, 0,  0, 0, 8]
-    ]
-}
-
-/**
- Returns a easy puzzle taken from websukodu.com
- 
- - returns: A sudoku puzzle that is a low difficulty level to solve.
- */
-func constructEasyPuzzle() -> Sudoku {
-    return [
-        [0, 3, 0,  0, 1, 6,  4, 0, 2],
-        [5, 0, 1,  0, 2, 0,  6, 0, 8],
-        [0, 6, 0,  0, 0, 0,  0, 0, 0],
-        
-        [3, 0, 2,  1, 0, 0,  0, 0, 0],
-        [4, 8, 5,  6, 0, 7,  1, 2, 3],
-        [0, 0, 0,  0, 0, 2,  7, 0, 5],
-        
-        [0, 0, 0,  0, 0, 0,  0, 5, 0],
-        [6, 0, 9,  0, 3, 0,  2, 0, 7],
-        [1, 0, 8,  9, 7, 0,  0, 4, 0]
-    ]
+        // When we are finished make sure we add the last row
+        outputPuzzle.append(currentRow)
+        return outputPuzzle
+    }
 }

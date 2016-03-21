@@ -139,75 +139,125 @@ class SudokuViewController: UIViewController, UICollectionViewDataSource, UIColl
 
     //  MARK: - Actions
 
+    /**
+     A event action sent by the solve button when the user touches up inside it. Handles two different functions.
+     Clears the puzzle if a solution is visible on the screen and solves the puzzle if it is not solved yet.
+     
+     - parameter sender: The UIButton instance that the event was fired for.
+     */
     @IBAction func didTouchUpInsideSolveButton(sender: UIButton) {
         
         //  If a solution is being displayed this action will reset the
         //  data in the puzzle
-        if isFinishedSolutionAttempt {
+        if (isFinishedSolutionAttempt) {
             
-            errorLabel.text = ""
-            
-            //  Reset the puzzle
-            if let customInput = self.customPuzzleString {
-                puzzle = SudokuType.Custom(customInput).constructPuzzle()
-            } else {
-                puzzle = SudokuType.Default.constructPuzzle()
-            }
-            
-            collectionView.reloadData()
-            isFinishedSolutionAttempt = false
-            solveButton.setTitle(kSolveButtonTitle, forState: .Normal)
+            self.resetPuzzle()
             
         } else {
             
-            solveButton.enabled = false
-            solveButton.setTitle(kClearButtonTitle, forState: .Normal)
-            
-            let algorithm = SudokuSolver()
-            if let solution = algorithm.solve(puzzle) {
-                puzzle = solution
-                collectionView.reloadData()
-            } else {
-                errorLabel.text = kNoSolutionMessage
-            }
-            
-            solveButton.enabled = true
-            isFinishedSolutionAttempt = true
+            self.solvePuzzle()
         }
+    }
+    
+    //  MARK: - Instance Methods
+    
+    /**
+     Updates the view to clear a solved soduko puzzle.
+     */
+    private func resetPuzzle() {
+        
+        errorLabel.text = ""
+        
+        //  Reset the puzzle
+        if let customInput = self.customPuzzleString {
+            puzzle = SudokuType.Custom(customInput).constructPuzzle()
+        } else {
+            puzzle = SudokuType.Default.constructPuzzle()
+        }
+        
+        collectionView.reloadData()
+        isFinishedSolutionAttempt = false
+        solveButton.setTitle(kSolveButtonTitle, forState: .Normal)
+    }
+    
+    /**
+     Updates the view to solve an unsolved soduko puzzle.
+     */
+    private func solvePuzzle() {
+        
+        solveButton.enabled = false
+        solveButton.setTitle(kClearButtonTitle, forState: .Normal)
+        
+        let algorithm = SudokuSolver()
+        if let solution = algorithm.solve(puzzle) {
+            puzzle = solution
+            collectionView.reloadData()
+        } else {
+            errorLabel.text = kNoSolutionMessage
+        }
+        
+        solveButton.enabled = true
+        isFinishedSolutionAttempt = true
     }
     
 
     //  MARK: - UICollectionViewDataSource
     
-    //  TODO: Try without using sections, also try manually updating the frame size
-    
+    /**
+     Asks your data source object for the number of sections in the collection view.
+     
+     - parameter collectionView: The collection view requesting this information.
+     
+     - returns: The number of sections in collectionView.
+     */
     func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
-        return 1 //puzzle.count
+        return puzzle.count
     }
     
+    /**
+     Asks your data source object for the number of items in the specified section.
+     
+     - parameter collectionView: The collection view requesting this information.
+     - parameter section:        An index number identifying a section in collectionView. This index value is 0-based.
+     
+     - returns: The number of rows in section.
+     */
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return kPuzzleSize * kPuzzleSize //puzzle[section].count
+        return puzzle[section].count
     }
     
+    /**
+     Asks your data source object for the cell that corresponds to the specified item in the collection view.
+     
+     - parameter collectionView: The collection view requesting this information.
+     - parameter indexPath:      The index path that specifies the location of the item.
+     
+     - returns: A configured cell object.
+     */
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
         
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier("cell", forIndexPath: indexPath)
         
-        let row = indexPath.row / kPuzzleSize
-        let col = indexPath.row % kPuzzleSize
-        
         if let customCell = cell as? SudokuCollectionViewCell {
-            customCell.setCellText(puzzle[ row/*indexPath.section*/][ col/*indexPath.row*/], animate: false)
-            customCell.layer.borderWidth = 0.0
+            customCell.setCellText(puzzle[indexPath.section][indexPath.row])
             return customCell
         }
         
         return cell
     }
-
+    
     
     //  MARK: - UICollectionViewDelegateFlowLayout
     
+    /**
+     Asks the delegate for the size of the specified item’s cell.
+     
+     - parameter collectionView:       The collection view object displaying the flow layout.
+     - parameter collectionViewLayout: The layout object requesting the information.
+     - parameter indexPath:            The index path of the item.
+     
+     - returns: The width and height of the specified item.
+     */
     func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout,
                         sizeForItemAtIndexPath indexPath: NSIndexPath) -> CGSize {
         
@@ -217,28 +267,46 @@ class SudokuViewController: UIViewController, UICollectionViewDataSource, UIColl
         return CGSizeMake(itemWidth, itemWidth)
     }
     
+    /**
+     Asks the delegate for the spacing between successive rows or columns of a section.
+     
+     - parameter collectionView:       The collection view object displaying the flow layout.
+     - parameter collectionViewLayout: The layout object requesting the information.
+     - parameter section:              The index number of the section whose line spacing is needed.
+     
+     - returns: The minimum space (measured in points) to apply between successive lines in a section.
+     */
     func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout,
                         minimumLineSpacingForSectionAtIndex section: Int) -> CGFloat {
         return kCellSpacing
     }
     
+    /**
+     Asks the delegate for the spacing between successive items in the rows or columns of a section.
+     
+     - parameter collectionView:       The collection view object displaying the flow layout.
+     - parameter collectionViewLayout: The layout object requesting the information.
+     - parameter section:              The index number of the section whose inter-item spacing is needed.
+     
+     - returns: The minimum space (measured in points) to apply between successive items in the lines of a section.
+     */
     func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout,
                         minimumInteritemSpacingForSectionAtIndex section: Int) -> CGFloat {
         return kCellSpacing
     }
     
+    /**
+     Asks the delegate for the margins to apply to content in the specified section.
+     The margins to apply to items in the section.
+     
+     - parameter collectionView:       The collection view object displaying the flow layout.
+     - parameter collectionViewLayout: The layout object requesting the information.
+     - parameter section:              The index number of the section whose insets are needed.
+     
+     - returns: The margins to apply to items in the section.
+     */
     func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout,
                         insetForSectionAtIndex section: Int) -> UIEdgeInsets {
         return UIEdgeInsets(top: kCellSpacing, left: kCellSpacing, bottom: 0.0, right: kCellSpacing)
-    }
-    
-    func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout,
-                        referenceSizeForFooterInSection section: Int) -> CGSize {
-        return CGSizeZero
-    }
-    
-    func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout,
-                        referenceSizeForHeaderInSection section: Int) -> CGSize {
-        return CGSizeZero
     }
 }

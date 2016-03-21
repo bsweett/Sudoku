@@ -36,7 +36,9 @@
                     <constraints>
                         <constraint firstAttribute="trailing" secondItem="TSG-3b-Evb" secondAttribute="trailing" constant="24" id="05d-Ql-t9m"/>
                         <constraint firstItem="TSG-3b-Evb" firstAttribute="leading" secondItem="Gb2-p7-ZBl" secondAttribute="leading" constant="24" id="Tol-J8-byD"/>
-                        <constraint firstAttribute="height" constant="75" id="pmZ-1y-7GK"/>
+                        <constraint firstAttribute="height" constant="75" id="pmZ-1y-7GK">
+                            <variation key="heightClass=regular-widthClass=regular" constant="100"/>
+                        </constraint>
                         <constraint firstItem="TSG-3b-Evb" firstAttribute="centerY" secondItem="Gb2-p7-ZBl" secondAttribute="centerY" id="sze-Bq-cB2"/>
                         <constraint firstItem="TSG-3b-Evb" firstAttribute="centerX" secondItem="Gb2-p7-ZBl" secondAttribute="centerX" id="too-sz-d0r"/>
                     </constraints>
@@ -44,11 +46,21 @@
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="idA-aW-xo7">
                     <rect key="frame" x="0.0" y="32" width="600" height="493"/>
                     <subviews>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bTk-6y-FKN">
+                            <rect key="frame" x="300" y="85" width="0.0" height="0.0"/>
+                            <fontDescription key="fontDescription" name="AvenirNext-Regular" family="Avenir Next" pointSize="15"/>
+                            <color key="textColor" red="0.50196081400000003" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                            <nil key="highlightedColor"/>
+                        </label>
                         <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="jN5-hp-r4G">
-                            <rect key="frame" x="143" y="89" width="315" height="315"/>
+                            <rect key="frame" x="146" y="93" width="308" height="308"/>
                             <constraints>
-                                <constraint firstAttribute="height" constant="315" id="OJQ-hr-iNd"/>
-                                <constraint firstAttribute="width" constant="315" id="zh3-J1-Tvr"/>
+                                <constraint firstAttribute="height" constant="308" id="OJQ-hr-iNd">
+                                    <variation key="heightClass=regular-widthClass=regular" constant="560"/>
+                                </constraint>
+                                <constraint firstAttribute="width" constant="308" id="zh3-J1-Tvr">
+                                    <variation key="heightClass=regular-widthClass=regular" constant="560"/>
+                                </constraint>
                             </constraints>
                             <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="CdE-xc-RfK">
                                 <size key="itemSize" width="50" height="50"/>
@@ -61,12 +73,6 @@
                                 <outlet property="delegate" destination="-1" id="Tmx-lk-z3r"/>
                             </connections>
                         </collectionView>
-                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bTk-6y-FKN">
-                            <rect key="frame" x="300" y="81" width="0.0" height="0.0"/>
-                            <fontDescription key="fontDescription" name="AvenirNext-Regular" family="Avenir Next" pointSize="15"/>
-                            <color key="textColor" red="0.50196081400000003" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-                            <nil key="highlightedColor"/>
-                        </label>
                     </subviews>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     <constraints>
@@ -85,7 +91,9 @@
                 <constraint firstAttribute="bottom" secondItem="Gb2-p7-ZBl" secondAttribute="bottom" id="eqD-5T-qBa"/>
                 <constraint firstAttribute="trailing" secondItem="idA-aW-xo7" secondAttribute="trailing" id="hKw-fG-9j1"/>
                 <constraint firstItem="Gb2-p7-ZBl" firstAttribute="top" secondItem="idA-aW-xo7" secondAttribute="bottom" id="kGX-DQ-wBZ"/>
-                <constraint firstItem="idA-aW-xo7" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" constant="32" id="krH-NU-zUn"/>
+                <constraint firstItem="idA-aW-xo7" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" constant="32" id="krH-NU-zUn">
+                    <variation key="heightClass=regular-widthClass=regular" constant="42"/>
+                </constraint>
             </constraints>
         </view>
     </objects>
